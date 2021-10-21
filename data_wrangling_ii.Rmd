@@ -125,7 +125,7 @@ poke$name
 ```
 
 
-
+```{r}
  nh1516_pt1=
   nh1516_pt1 %>% 
   mutate(cdc_cat = as.factor(
@@ -134,6 +134,14 @@ poke$name
         ifelse(bmi < 30, "overweight", "obesity")))
          )) 
 
+
+strat_c1 = 
+  nh1516_pt1 %>% 
+  filter (bmi %in% c("obese", "healthy")) %>% 
+  group_by (bmi) %>% 
+  sample_n(15)
+  
+```
 
 
 
