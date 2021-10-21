@@ -1,0 +1,12 @@
+---
+title: "strings and factors"
+author: "Yang Gao"
+date: "10/21/2021"
+output: github_document
+---
+
+```{r}
+library(rvest)
+library(p8105.datasets)
+```
+
