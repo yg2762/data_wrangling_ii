@@ -1,0 +1,140 @@
+---
+title: "data_wrangling_ii"
+author: "Yang Gao"
+date: "10/19/2021"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(httr)
+```
+
+## NSDUH Data
+```{r}
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+
+drug_use_html = read_html(url)
+
+drug_use_html %>%
+  html_table()
+
+drug_use_df=
+  drug_use_html %>% 
+  html_table() %>% 
+  first() %>% 
+  slice(-1)
+```
+
+
+## Star Wars
+Get some star wars data
+```{r}
+sw_url = "https://www.imdb.com/list/ls070150896/"
+
+sw_html = read_html (sw_url)
+
+
+title_vec = 
+  sw_html %>%
+  html_elements(".lister-item-header a") %>%
+  html_text()
+
+gross_rev_vec = 
+  sw_html %>%
+  html_elements(".text-small:nth-child(7) span:nth-child(5)") %>%
+  html_text()
+
+runtime_vec = 
+  sw_html %>%
+  html_elements(".runtime") %>%
+  html_text()
+
+sw_df = 
+  tibble(
+    tittle = title_vec,
+    rev = gross_rev_vec,
+    runtime = runtime_vec)
+   
+```
+
+
+```{r}
+url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+dynamite_html = read_html(url)
+
+review_titles = 
+  dynamite_html %>%
+  html_elements(".a-text-bold span") %>%
+  html_text()
+
+review_stars = 
+  dynamite_html %>%
+  html_elements("#cm_cr-review_list .review-rating") %>%
+  html_text()
+
+review_text = 
+  dynamite_html %>%
+  html_elements(".review-text-content span") %>%
+  html_text()
+
+reviews = tibble(
+  title = review_titles,
+  stars = review_stars,
+  text = review_text
+)
+
+
+```
+
+## API
+```{r}
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
+  content()
+
+```
+
+
+```{r}
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.json") %>%
+  content("text") %>%
+  jsonlite::fromJSON() %>%
+  as_tibble()
+```
+
+BRFSS data via API
+```{r}
+brfss_df = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv",
+    query = list("$limit"=5000))%>% 
+  content()
+```
+
+
+
+```{r}
+poke = 
+  GET("http://pokeapi.co/api/v2/pokemon/1") %>%
+  content()
+
+poke$name
+```
+
+
+
+ nh1516_pt1=
+  nh1516_pt1 %>% 
+  mutate(cdc_cat = as.factor(
+   ifelse( bmi < 18, "underweight",
+      ifelse(bmi < 25, "healthy", 
+        ifelse(bmi < 30, "overweight", "obesity")))
+         )) 
+
+
+
+
+
